@@ -6,38 +6,67 @@
     <title>Markdown to HTML Code Converter</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             margin: 0;
-            padding: 20px;
+            padding: 40px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        h1 {
+            margin-bottom: 20px;
+            color: #444;
         }
         textarea {
             width: 100%;
             max-width: 800px;
             height: 200px;
             margin-bottom: 20px;
-            padding: 10px;
-            font-family: monospace;
+            padding: 15px;
+            font-family: 'Courier New', Courier, monospace;
             font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            resize: vertical;
+            background-color: #fff;
         }
         .output {
             width: 100%;
             max-width: 800px;
-            border: 1px solid #ccc;
-            padding: 10px;
+            border: 1px solid #ddd;
+            padding: 15px;
             min-height: 200px;
-            background-color: #f9f9f9;
+            background-color: #fafafa;
             white-space: pre-wrap;
-            font-family: monospace;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+        footer {
+            margin-top: 40px;
+            font-size: 14px;
+            color: #888;
+        }
+        footer a {
+            color: #888;
+            text-decoration: none;
+            border-bottom: 1px dotted #888;
+        }
+        footer a:hover {
+            color: #555;
+            border-bottom: 1px solid #555;
         }
     </style>
 </head>
 <body>
     <h1>Markdown to HTML Code Converter</h1>
     <textarea id="markdown" placeholder="Enter your Markdown here..."></textarea>
-    <div class="output" id="html-output"></div>
+    <div class="output" id="html-output" placeholder="Your HTML code will appear here..."></div>
 
     <!-- Include marked.js from CDN -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -52,5 +81,9 @@
             htmlOutput.textContent = html;
         });
     </script>
+
+    <footer>
+        <p>Made with ❤️ using <a href="https://marked.js.org/" target="_blank">marked.js</a></p>
+    </footer>
 </body>
 </html>
