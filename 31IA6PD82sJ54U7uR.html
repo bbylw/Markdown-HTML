@@ -1,0 +1,237 @@
+<html><head><base href="https://markdowntohtml.com/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Markdown 与 HTML 转换器 - 像素风格</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.0.3/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/turndown/7.1.1/turndown.min.js"></script>
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<style>
+  :root {
+    --primary-color: #0096FA;
+    --secondary-color: #E4E7ED;
+    --text-color: #333;
+    --background-color: #F8F8F8;
+  }
+  
+  body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  header {
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 10px 0;
+  }
+  
+  h1 {
+    text-align: center;
+    color: var(--primary-color);
+    font-size: 24px;
+    margin: 0;
+  }
+  
+  .tab {
+    display: flex;
+    background-color: white;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .tab button {
+    flex: 1;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    font-size: 16px;
+    color: var(--text-color);
+    border-bottom: 3px solid transparent;
+  }
+  
+  .tab button:hover {
+    background-color: var(--secondary-color);
+  }
+  
+  .tab button.active {
+    border-bottom: 3px solid var(--primary-color);
+    color: var(--primary-color);
+  }
+  
+  .tabcontent {
+    display: none;
+    background-color: white;
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  textarea, #editor {
+    width: 100%;
+    height: 300px;
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid var(--secondary-color);
+    border-radius: 4px;
+    font-size: 14px;
+    resize: vertical;
+  }
+  
+  button {
+    background-color: var(--primary-color);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+  }
+  
+  button:hover {
+    background-color: #0078c8;
+  }
+  
+  #output {
+    border: 1px solid var(--secondary-color);
+    padding: 20px;
+    margin-top: 20px;
+    background-color: white;
+    border-radius: 4px;
+    min-height: 200px;
+  }
+  
+  .ql-toolbar.ql-snow {
+    border: 1px solid var(--secondary-color);
+    border-radius: 4px 4px 0 0;
+  }
+  
+  .ql-container.ql-snow {
+    border: 1px solid var(--secondary-color);
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Markdown 与 HTML 转换器 - 像素风格</h1>
+</header>
+<div class="container">
+  <div class="tab">
+    <button class="tablinks" onclick="openTab(event, 'CodeView')" id="defaultOpen">代码视图</button>
+    <button class="tablinks" onclick="openTab(event, 'WritingView')">撰写视图</button>
+  </div>
+
+  <div id="CodeView" class="tabcontent">
+    <textarea id="input" placeholder="在此输入Markdown或HTML代码..."></textarea>
+    <div>
+      <button onclick="convertToHTML()">转换为HTML</button>
+      <button onclick="convertToMarkdown()">转换为Markdown</button>
+      <button onclick="copyOutput()">复制输出</button>
+    </div>
+    <div id="output"></div>
+  </div>
+
+  <div id="WritingView" class="tabcontent">
+    <div id="editor"></div>
+    <button onclick="syncContent()">同步内容</button>
+  </div>
+</div>
+
+<script>
+let currentMode = 'html';
+let quill;
+
+function openTab(evt, tabName) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+  document.getElementById(tabName).style.display = "block";
+  evt.currentTarget.className += " active";
+
+  if (tabName === 'WritingView' && !quill) {
+    quill = new Quill('#editor', {
+      theme: 'snow',
+      modules: {
+        toolbar: [
+          [{ 'header': [1, 2, 3, false] }],
+          ['bold', 'italic', 'underline', 'strike'],
+          ['link', 'image'],
+          [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+          ['clean']
+        ]
+      }
+    });
+  }
+}
+
+function convertToHTML() {
+  const input = document.getElementById('input').value;
+  const output = marked(input);
+  document.getElementById('output').innerHTML = output;
+  currentMode = 'html';
+}
+
+function convertToMarkdown() {
+  const input = document.getElementById('input').value;
+  const turndownService = new TurndownService();
+  const output = turndownService.turndown(input);
+  document.getElementById('output').textContent = output;
+  currentMode = 'markdown';
+}
+
+function copyOutput() {
+  const output = document.getElementById('output');
+  const range = document.createRange();
+  range.selectNode(output);
+  window.getSelection().removeAllRanges();
+  window.getSelection().addRange(range);
+  document.execCommand('copy');
+  window.getSelection().removeAllRanges();
+  alert('已复制到剪贴板！');
+}
+
+document.getElementById('output').addEventListener('click', function() {
+  if (currentMode === 'html') {
+    convertToMarkdown();
+  } else {
+    convertToHTML();
+  }
+});
+
+function syncContent() {
+  const editorContent = quill.root.innerHTML;
+  document.getElementById('input').value = editorContent;
+  convertToMarkdown();
+  alert('内容已同步到代码视图！');
+}
+
+document.getElementById("defaultOpen").click();
+</script>
+</body>
+</html>
