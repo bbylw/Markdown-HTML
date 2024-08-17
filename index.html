@@ -1,89 +1,250 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Markdown to HTML Code Converter</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 0;
-            padding: 40px;
-            background-color: #f4f4f9;
-            color: #333;
-        }
-        h1 {
-            margin-bottom: 20px;
-            color: #444;
-        }
-        textarea {
-            width: 100%;
-            max-width: 800px;
-            height: 200px;
-            margin-bottom: 20px;
-            padding: 15px;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            resize: vertical;
-            background-color: #fff;
-        }
-        .output {
-            width: 100%;
-            max-width: 800px;
-            border: 1px solid #ddd;
-            padding: 15px;
-            min-height: 200px;
-            background-color: #fafafa;
-            white-space: pre-wrap;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 16px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            overflow-x: auto;
-        }
-        footer {
-            margin-top: 40px;
-            font-size: 14px;
-            color: #888;
-        }
-        footer a {
-            color: #888;
-            text-decoration: none;
-            border-bottom: 1px dotted #888;
-        }
-        footer a:hover {
-            color: #555;
-            border-bottom: 1px solid #555;
-        }
-    </style>
+
+<html><head><base href="https://markdowntohtml.com/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Markdown 与 HTML 转换器 - 像素风格</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.0.3/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/turndown/7.1.1/turndown.min.js"></script>
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<style>
+  :root {
+    --primary-color: #0096FA;
+    --secondary-color: #E4E7ED;
+    --text-color: #333;
+    --background-color: #F8F8F8;
+  }
+  
+  body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  header {
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 10px 0;
+  }
+  
+  h1 {
+    text-align: center;
+    color: var(--primary-color);
+    font-size: 24px;
+    margin: 0;
+  }
+  
+  .tab {
+    display: flex;
+    background-color: white;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .tab button {
+    flex: 1;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    font-size: 16px;
+    color: var(--text-color);
+    border-bottom: 3px solid transparent;
+  }
+  
+  .tab button:hover {
+    background-color: var(--secondary-color);
+  }
+  
+  .tab button.active {
+    border-bottom: 3px solid var(--primary-color);
+    color: var(--primary-color);
+  }
+  
+  .tabcontent {
+    display: none;
+    background-color: white;
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  textarea, #editor {
+    width: 100%;
+    height: 300px;
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid var(--secondary-color);
+    border-radius: 4px;
+    font-size: 14px;
+    resize: vertical;
+  }
+  
+  button {
+    background-color: var(--primary-color);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+  }
+  
+  button:hover {
+    background-color: #0078c8;
+  }
+  
+  #output {
+    border: 1px solid var(--secondary-color);
+    padding: 20px;
+    margin-top: 20px;
+    background-color: white;
+    border-radius: 4px;
+    min-height: 200px;
+  }
+  
+  .ql-toolbar.ql-snow {
+    border: 1px solid var(--secondary-color);
+    border-radius: 4px 4px 0 0;
+  }
+  
+  .ql-container.ql-snow {
+    border: 1px solid var(--secondary-color);
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+  }
+</style>
 </head>
 <body>
-    <h1>Markdown to HTML Code Converter</h1>
-    <textarea id="markdown" placeholder="Enter your Markdown here..."></textarea>
-    <div class="output" id="html-output" placeholder="Your HTML code will appear here..."></div>
+<header>
+  <h1>Markdown 与 HTML 转换器 - 像素风格</h1>
+</header>
+<div class="container">
+  <div class="tab">
+    <button class="tablinks" onclick="openTab(event, 'CodeView')" id="defaultOpen">代码视图</button>
+    <button class="tablinks" onclick="openTab(event, 'WritingView')">撰写视图</button>
+  </div>
 
-    <!-- Include marked.js from CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script>
-        const markdownInput = document.getElementById('markdown');
-        const htmlOutput = document.getElementById('html-output');
+  <div id="CodeView" class="tabcontent">
+    <textarea id="input" placeholder="在此输入Markdown或HTML代码..."></textarea>
+    <div>
+      <button onclick="convertToHTML()">转换为HTML</button>
+      <button onclick="convertToMarkdown()">转换为Markdown</button>
+      <button onclick="copyOutput()">复制输出</button>
+    </div>
+    <div id="output"></div>
+  </div>
 
-        markdownInput.addEventListener('input', () => {
-            const markdownText = markdownInput.value;
-            const html = marked.parse(markdownText);
-            // Escape HTML to display it as code
-            htmlOutput.textContent = html;
-        });
-    </script>
+  <div id="WritingView" class="tabcontent">
+    <div id="editor"></div>
+    <button onclick="syncContentToMarkdown()">同步为Markdown</button>
+    <button onclick="syncContentToHTML()">同步为HTML</button>
+  </div>
+</div>
 
-    <footer>
-        <p>Made with ❤️ using <a href="https://marked.js.org/" target="_blank">marked.js</a></p>
-    </footer>
+<script>
+let currentMode = 'html';
+let quill;
+
+function openTab(evt, tabName) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+  document.getElementById(tabName).style.display = "block";
+  evt.currentTarget.className += " active";
+
+  if (tabName === 'WritingView' && !quill) {
+    quill = new Quill('#editor', {
+      theme: 'snow',
+      modules: {
+        toolbar: [
+          [{ 'header': [1, 2, 3, false] }],
+          ['bold', 'italic', 'underline', 'strike'],
+          ['link', 'image'],
+          [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+          ['clean']
+        ]
+      }
+    });
+  }
+}
+
+function convertToHTML() {
+  const input = document.getElementById('input').value;
+  const output = marked(input);
+  document.getElementById('output').innerHTML = output;
+  currentMode = 'html';
+}
+
+function convertToMarkdown() {
+  const input = document.getElementById('input').value;
+  const turndownService = new TurndownService();
+  const output = turndownService.turndown(input);
+  document.getElementById('output').textContent = output;
+  currentMode = 'markdown';
+}
+
+function copyOutput() {
+  const output = document.getElementById('output');
+  const range = document.createRange();
+  range.selectNode(output);
+  window.getSelection().removeAllRanges();
+  window.getSelection().addRange(range);
+  document.execCommand('copy');
+  window.getSelection().removeAllRanges();
+  alert('已复制到剪贴板！');
+}
+
+document.getElementById('output').addEventListener('click', function() {
+  if (currentMode === 'html') {
+    convertToMarkdown();
+  } else {
+    convertToHTML();
+  }
+});
+
+function syncContentToMarkdown() {
+  const editorContent = quill.root.innerHTML;
+  const turndownService = new TurndownService();
+  const markdownContent = turndownService.turndown(editorContent);
+  document.getElementById('input').value = markdownContent;
+  document.getElementById('output').textContent = markdownContent;
+  currentMode = 'markdown';
+  alert('内容已同步为Markdown格式！');
+}
+
+function syncContentToHTML() {
+  const editorContent = quill.root.innerHTML;
+  document.getElementById('input').value = editorContent;
+  document.getElementById('output').innerHTML = editorContent;
+  currentMode = 'html';
+  alert('内容已同步为HTML格式！');
+}
+
+document.getElementById("defaultOpen").click();
+</script>
 </body>
 </html>
