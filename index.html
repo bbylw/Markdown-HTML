@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown to HTML Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+        textarea {
+            width: 100%;
+            max-width: 800px;
+            height: 200px;
+            margin-bottom: 20px;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 16px;
+        }
+        .output {
+            width: 100%;
+            max-width: 800px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            min-height: 200px;
+            background-color: #f9f9f9;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>Markdown to HTML Converter</h1>
+    <textarea id="markdown" placeholder="Enter your Markdown here..."></textarea>
+    <div class="output" id="html-output"></div>
+
+    <!-- Include marked.js from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        const markdownInput = document.getElementById('markdown');
+        const htmlOutput = document.getElementById('html-output');
+
+        markdownInput.addEventListener('input', () => {
+            const markdownText = markdownInput.value;
+            const html = marked.parse(markdownText);
+            htmlOutput.innerHTML = html;
+        });
+    </script>
+</body>
+</html>
