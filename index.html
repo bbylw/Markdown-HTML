@@ -2,7 +2,7 @@
 <html><head><base href="https://markdowntohtml.com/">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Markdown 与 HTML 转换器 - 像素风格</title>
+<title>Markdown 与 HTML 双向转换器 - 像素风格</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.0.3/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/turndown/7.1.1/turndown.min.js"></script>
 <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
@@ -111,7 +111,13 @@
     background-color: #0078c8;
   }
   
-  #output {
+  .output-container {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .output-box {
+    flex: 1;
     border: 1px solid var(--secondary-color);
     padding: 20px;
     margin-top: 20px;
@@ -134,11 +140,11 @@
 </head>
 <body>
 <header>
-  <h1>Markdown 与 HTML 转换器 - 像素风格</h1>
+  <h1>Markdown 与 HTML 双向转换器 - 像素风格</h1>
 </header>
 <div class="container">
   <div class="tab">
-    <button class="tablinks" onclick="openTab(event, 'CodeView')" id="defaultOpen">代码视图</button>
+    <button class="tablinks" onclick="openTab(event, 'CodeView')" id="defaultOpen">代码转换</button>
     <button class="tablinks" onclick="openTab(event, 'WritingView')">撰写视图</button>
   </div>
 
@@ -147,9 +153,19 @@
     <div>
       <button onclick="convertToHTML()">转换为HTML</button>
       <button onclick="convertToMarkdown()">转换为Markdown</button>
-      <button onclick="copyOutput()">复制输出</button>
+      <button onclick="copyOutput('html')">复制HTML</button>
+      <button onclick="copyOutput('markdown')">复制Markdown</button>
     </div>
-    <div id="output"></div>
+    <div class="output-container">
+      <div class="output-box">
+        <h3>HTML 输出</h3>
+        <div id="htmlOutput"></div>
+      </div>
+      <div class="output-box">
+        <h3>Markdown 输出</h3>
+        <pre id="markdownOutput"></pre>
+      </div>
+    </div>
   </div>
 
   <div id="WritingView" class="tabcontent">
@@ -160,7 +176,6 @@
 </div>
 
 <script>
-let currentMode = 'html';
 let quill;
 
 function openTab(evt, tabName) {
@@ -194,57 +209,57 @@ function openTab(evt, tabName) {
 
 function convertToHTML() {
   const input = document.getElementById('input').value;
-  const output = marked(input);
-  document.getElementById('output').innerHTML = output;
-  currentMode = 'html';
+  const htmlOutput = marked(input);
+  document.getElementById('htmlOutput').innerHTML = htmlOutput;
+  document.getElementById('markdownOutput').textContent = input;
 }
 
 function convertToMarkdown() {
   const input = document.getElementById('input').value;
   const turndownService = new TurndownService();
-  const output = turndownService.turndown(input);
-  document.getElementById('output').textContent = output;
-  currentMode = 'markdown';
+  const markdownOutput = turndownService.turndown(input);
+  document.getElementById('htmlOutput').innerHTML = input;
+  document.getElementById('markdownOutput').textContent = markdownOutput;
 }
 
-function copyOutput() {
-  const output = document.getElementById('output');
-  const range = document.createRange();
-  range.selectNode(output);
-  window.getSelection().removeAllRanges();
-  window.getSelection().addRange(range);
-  document.execCommand('copy');
-  window.getSelection().removeAllRanges();
-  alert('已复制到剪贴板！');
+function copyOutput(type) {
+  const output = type === 'html' ? document.getElementById('htmlOutput').innerHTML : document.getElementById('markdownOutput').textContent;
+  navigator.clipboard.writeText(output).then(() => {
+    alert(`已复制${type === 'html' ? 'HTML' : 'Markdown'}到剪贴板！`);
+  });
 }
-
-document.getElementById('output').addEventListener('click', function() {
-  if (currentMode === 'html') {
-    convertToMarkdown();
-  } else {
-    convertToHTML();
-  }
-});
 
 function syncContentToMarkdown() {
   const editorContent = quill.root.innerHTML;
   const turndownService = new TurndownService();
   const markdownContent = turndownService.turndown(editorContent);
   document.getElementById('input').value = markdownContent;
-  document.getElementById('output').textContent = markdownContent;
-  currentMode = 'markdown';
-  alert('内容已同步为Markdown格式！');
+  document.getElementById('htmlOutput').innerHTML = editorContent;
+  document.getElementById('markdownOutput').textContent = markdownContent;
+  alert('内容已同步为Markdown和HTML格式！');
 }
 
 function syncContentToHTML() {
   const editorContent = quill.root.innerHTML;
   document.getElementById('input').value = editorContent;
-  document.getElementById('output').innerHTML = editorContent;
-  currentMode = 'html';
-  alert('内容已同步为HTML格式！');
+  document.getElementById('htmlOutput').innerHTML = editorContent;
+  const turndownService = new TurndownService();
+  const markdownContent = turndownService.turndown(editorContent);
+  document.getElementById('markdownOutput').textContent = markdownContent;
+  alert('内容已同步为HTML和Markdown格式！');
 }
 
 document.getElementById("defaultOpen").click();
+
+// 自动检测并转换输入
+document.getElementById('input').addEventListener('input', function() {
+  const input = this.value.trim();
+  if (input.startsWith('<')) {
+    convertToMarkdown();
+  } else {
+    convertToHTML();
+  }
+});
 </script>
 </body>
 </html>
