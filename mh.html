@@ -1,152 +1,307 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Code to Markdown/HTML Converter</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .container {
-            max-width: 800px;
-            width: 100%;
-            padding: 20px;
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            color: #333;
-            font-size: 24px;
-            text-align: center;
-        }
-        textarea {
-            width: 100%;
-            height: 150px;
-            margin-bottom: 20px;
-            font-family: monospace;
-            font-size: 14px;
-            padding: 10px;
-            background-color: #282c34;
-            color: #abb2bf;
-            border: 1px solid #3a3f45;
-            border-radius: 5px;
-            resize: none;
-        }
-        button {
-            padding: 10px 20px;
-            margin: 5px 5px 20px 0;
-            font-size: 16px;
-            color: #ffffff;
-            background-color: #007acc;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #005f99;
-        }
-        pre {
-            background-color: #282c34;
-            padding: 15px;
-            border-radius: 5px;
-            border: 1px solid #3a3f45;
-            color: #abb2bf;
-            overflow-x: auto;
-            white-space: pre-wrap; /* Wrap long lines */
-            position: relative;
-        }
-        .code-container {
-            position: relative;
-            margin-bottom: 20px;
-        }
-        .copy-button {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: #007acc;
-            border: none;
-            color: white;
-            padding: 5px 10px;
-            cursor: pointer;
-            font-size: 12px;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-        .copy-button:hover {
-            background-color: #005f99;
-        }
-    </style>
+
+<html><head><base href="https://example.com"><meta charset="utf-8"><title>代码转换工具 - VS Code 风格</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    background-color: #1E1E1E;
+    color: #D4D4D4;
+    margin: 0;
+    padding: 20px;
+    line-height: 1.4;
+  }
+  h1 {
+    color: #FFFFFF;
+    text-align: center;
+  }
+  textarea {
+    width: 100%;
+    height: 200px;
+    background-color: #1E1E1E;
+    color: #D4D4D4;
+    border: 1px solid #3C3C3C;
+    padding: 10px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 14px;
+    resize: vertical;
+  }
+  button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #0E639C;
+    color: #FFFFFF;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 16px;
+    margin-top: 10px;
+    transition: all 0.3s;
+  }
+  button:hover {
+    background-color: #1177BB;
+  }
+  .output {
+    margin-top: 20px;
+    border: 1px solid #3C3C3C;
+    background-color: #252526;
+  }
+  .output-header {
+    background-color: #252526;
+    color: #FFFFFF;
+    padding: 5px 10px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .output-content {
+    padding: 10px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 14px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    background-color: #1E1E1E;
+    border-top: 1px solid #3C3C3C;
+  }
+  .copy-btn {
+    background-color: transparent;
+    color: #CCCCCC;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 0;
+    margin: 0;
+  }
+  .copy-btn:hover {
+    color: #FFFFFF;
+  }
+  #preview {
+    margin-top: 20px;
+    border: 1px solid #3C3C3C;
+    padding: 10px;
+    background-color: #252526;
+  }
+  #preview-header {
+    color: #FFFFFF;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  .vscode-style {
+    background-color: #1E1E1E;
+    color: #D4D4D4;
+    font-family: 'Consolas', 'Courier New', monospace;
+    padding: 16px;
+    border-radius: 3px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    position: relative;
+  }
+  .line-number {
+    color: #858585;
+    margin-right: 16px;
+    user-select: none;
+  }
+  .copy-code-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: #3C3C3C;
+    color: #CCCCCC;
+    border: none;
+    border-radius: 3px;
+    padding: 5px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .copy-code-btn:hover {
+    background-color: #4E4E4E;
+    color: #FFFFFF;
+  }
+</style>
 </head>
 <body>
-
-<div class="container">
-    <h1>Code to Markdown/HTML Converter</h1>
-
-    <textarea id="input-code" placeholder="Paste your code here..."></textarea>
-
-    <button onclick="generateMarkdown()">Generate Markdown</button>
-    <button onclick="generateHTML()">Generate HTML</button>
-
-    <h2>Generated Markdown:</h2>
-    <div class="code-container">
-        <pre id="markdown-output"></pre>
-        <button class="copy-button" onclick="copyMarkdown()">Copy Markdown</button>
+  <h1>代码转换工具 - VS Code 风格</h1>
+  <textarea id="input" placeholder="在此处粘贴您的代码..."></textarea>
+  <button onclick="convertCode()">转换代码</button>
+  
+  <div class="output">
+    <div class="output-header">
+      <span>HTML 输出</span>
+      <button class="copy-btn" onclick="copyToClipboard('html-output')">复制代码</button>
     </div>
-
-    <h2>Generated HTML:</h2>
-    <div class="code-container">
-        <pre id="html-output"></pre>
-        <button class="copy-button" onclick="copyGeneratedHTML()">Copy HTML</button>
+    <pre class="output-content" id="html-output"></pre>
+  </div>
+  
+  <div class="output">
+    <div class="output-header">
+      <span>Markdown 输出</span>
+      <button class="copy-btn" onclick="copyToClipboard('markdown-output')">复制代码</button>
     </div>
-</div>
+    <pre class="output-content" id="markdown-output"></pre>
+  </div>
+
+  <div id="preview">
+    <div id="preview-header">预览效果：</div>
+    <div id="preview-content"></div>
+  </div>
 
 <script>
-    function generateMarkdown() {
-        var code = document.getElementById("input-code").value;
-        var markdown = `\`\`\`html\n${code}\n\`\`\``;
-        document.getElementById("markdown-output").textContent = markdown;
-    }
+function convertCode() {
+  const input = document.getElementById('input').value;
+  const htmlOutput = document.getElementById('html-output');
+  const markdownOutput = document.getElementById('markdown-output');
+  const previewContent = document.getElementById('preview-content');
 
-    function generateHTML() {
-        var code = document.getElementById("input-code").value;
-        var html = `<div class="code-container">\n<pre style="background-color: #282c34; color: #abb2bf; padding: 15px; border-radius: 5px; border: 1px solid #3a3f45; white-space: pre-wrap; overflow-x: auto;">\n<code>${escapeHTML(code)}</code>\n</pre>\n<button class="copy-button" onclick="copyCode(this)">Copy Code</button>\n</div>\n<script>\nfunction copyCode(btn) {\n  var code = btn.previousElementSibling.innerText;\n  navigator.clipboard.writeText(code).then(() => {\n    alert('Code copied to clipboard!');\n  });\n}\n<\/script>`;
-        document.getElementById("html-output").textContent = html;
-    }
+  const lines = input.split('\n');
+  const lineNumbers = lines.map((_, index) => index + 1).join('\n');
 
-    function escapeHTML(str) {
-        return str.replace(/&/g, "&amp;")
-                  .replace(/</g, "&lt;")
-                  .replace(/>/g, "&gt;")
-                  .replace(/"/g, "&quot;")
-                  .replace(/'/g, "&#039;");
-    }
-
-    function copyMarkdown() {
-        var markdown = document.getElementById("markdown-output").textContent;
-        navigator.clipboard.writeText(markdown).then(() => {
-            alert('Generated Markdown copied to clipboard!');
-        });
-    }
-
-    function copyGeneratedHTML() {
-        var html = document.getElementById("html-output").textContent;
-        navigator.clipboard.writeText(html).then(() => {
-            alert('Generated HTML copied to clipboard!');
-        });
-    }
-</script>
-
+  // HTML 转换
+  const htmlCode = `
+<div class="vscode-style">
+<button class="copy-code-btn" onclick="copyCodeToClipboard(this)">复制代码</button>
+<pre><code>${lineNumbers.split('\n').map(num => `<span class="line-number">${num}</span>`).join('\n')}
+</code></pre>
+<pre><code>${escapeHtml(input)}</code></pre>
 </div>
-</body>
-</html>
+<style>
+.vscode-style {
+  background-color: #1E1E1E;
+  color: #D4D4D4;
+  font-family: 'Consolas', 'Courier New', monospace;
+  padding: 16px;
+  border-radius: 3px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  display: flex;
+  position: relative;
+}
+.vscode-style pre {
+  margin: 0;
+  padding: 0;
+}
+.line-number {
+  color: #858585;
+  margin-right: 16px;
+  user-select: none;
+  display: inline-block;
+  text-align: right;
+  width: 2em;
+}
+.copy-code-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: #3C3C3C;
+  color: #CCCCCC;
+  border: none;
+  border-radius: 3px;
+  padding: 5px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.copy-code-btn:hover {
+  background-color: #4E4E4E;
+  color: #FFFFFF;
+}
+</style>
+<script>
+function copyCodeToClipboard(button) {
+  const codeBlock = button.nextElementSibling.nextElementSibling;
+  const code = codeBlock.textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    const originalText = button.textContent;
+    button.textContent = '已复制！';
+    button.style.backgroundColor = '#4EC9B0';
+    setTimeout(() => {
+      button.textContent = originalText;
+      button.style.backgroundColor = '';
+    }, 2000);
+  }, (err) => {
+    console.error('无法复制文本: ', err);
+  });
+}
+<\/script>`;
+
+  htmlOutput.textContent = htmlCode;
+
+  // Markdown 转换
+  const markdownCode = `
+\`\`\`html
+<div style="background-color: #1E1E1E; color: #D4D4D4; font-family: 'Consolas', 'Courier New', monospace; padding: 16px; border-radius: 3px; box-shadow: 0 2px 6px rgba(0,0,0,0.15); display: flex; position: relative;">
+  <button style="position: absolute; top: 5px; right: 5px; background-color: #3C3C3C; color: #CCCCCC; border: none; border-radius: 3px; padding: 5px 10px; font-size: 12px; cursor: pointer;" onclick="copyCodeToClipboard(this)">复制代码</button>
+  <pre style="margin: 0; padding: 0;">
+    <code>${lineNumbers.split('\n').map(num => `<span style="color: #858585; margin-right: 16px; user-select: none; display: inline-block; text-align: right; width: 2em;">${num}</span>`).join('\n')}
+    </code>
+  </pre>
+  <pre style="margin: 0; padding: 0;">
+    <code>${escapeHtml(input)}</code>
+  </pre>
+</div>
+<script>
+function copyCodeToClipboard(button) {
+  const codeBlock = button.nextElementSibling.nextElementSibling;
+  const code = codeBlock.textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    const originalText = button.textContent;
+    button.textContent = '已复制！';
+    button.style.backgroundColor = '#4EC9B0';
+    setTimeout(() => {
+      button.textContent = originalText;
+      button.style.backgroundColor = '';
+    }, 2000);
+  }, (err) => {
+    console.error('无法复制文本: ', err);
+  });
+}
+<\/script>
+\`\`\``;
+
+  markdownOutput.textContent = markdownCode;
+
+  // 预览效果
+  previewContent.innerHTML = htmlCode;
+}
+
+function escapeHtml(unsafe) {
+  return unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function copyToClipboard(elementId) {
+  const element = document.getElementById(elementId);
+  const text = element.textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const button = element.previousElementSibling.querySelector('.copy-btn');
+    const originalText = button.textContent;
+    button.textContent = '已复制！';
+    button.style.color = '#4EC9B0';
+    setTimeout(() => {
+      button.textContent = originalText;
+      button.style.color = '';
+    }, 2000);
+  }, (err) => {
+    console.error('无法复制文本: ', err);
+  });
+}
+
+function copyCodeToClipboard(button) {
+  const codeBlock = button.nextElementSibling.nextElementSibling;
+  const code = codeBlock.textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    const originalText = button.textContent;
+    button.textContent = '已复制！';
+    button.style.backgroundColor = '#4EC9B0';
+    setTimeout(() => {
+      button.textContent = originalText;
+      button.style.backgroundColor = '';
+    }, 2000);
+  }, (err) => {
+    console.error('无法复制文本: ', err);
+  });
+}
+</script>
+</body></html>
