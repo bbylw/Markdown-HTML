@@ -1,13 +1,20 @@
 # Markdown-HTML
 
+```html
+function escapeHTML(str) {
+        return str.replace(/&/g, "&amp;")
+                  .replace(/</g, "&lt;")
+                  .replace(/>/g, "&gt;")
+                  .replace(/"/g, "&quot;")
+                  .replace(/'/g, "&#039;");
 ```
-font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-```
+
+<button onclick="copyCode(this)">Copy Code</button>
+<script>
+function copyCode(btn) {
+  var code = btn.previousElementSibling.innerText;
+  navigator.clipboard.writeText(code).then(() => {
+    alert('Code copied to clipboard!');
+  });
+}
+</script>
