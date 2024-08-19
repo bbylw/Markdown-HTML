@@ -64,9 +64,26 @@
             color: #dcdcdc;
             overflow-x: auto;
             white-space: pre-wrap; /* Wrap long lines */
+            position: relative;
         }
-        #markdown-output, #html-output {
-            white-space: pre-wrap; /* Wrap long lines */
+        .code-container {
+            position: relative;
+        }
+        .copy-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #61dafb;
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 12px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .copy-button:hover {
+            background-color: #4fa4d5;
         }
     </style>
 </head>
@@ -84,7 +101,10 @@
     <pre id="markdown-output"></pre>
 
     <h2>Generated HTML:</h2>
-    <pre id="html-output"></pre>
+    <div class="code-container">
+        <pre id="html-output"></pre>
+        <button class="copy-button" onclick="copyGeneratedHTML()">Copy HTML</button>
+    </div>
 </div>
 
 <script>
@@ -106,6 +126,13 @@
                   .replace(/>/g, "&gt;")
                   .replace(/"/g, "&quot;")
                   .replace(/'/g, "&#039;");
+    }
+
+    function copyGeneratedHTML() {
+        var html = document.getElementById("html-output").textContent;
+        navigator.clipboard.writeText(html).then(() => {
+            alert('Generated HTML copied to clipboard!');
+        });
     }
 </script>
 
