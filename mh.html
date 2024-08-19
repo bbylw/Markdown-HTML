@@ -125,6 +125,7 @@
     border-radius: 5px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     position: relative;
+    overflow-x: auto;
   }
   .line-number {
     color: #858585;
@@ -205,9 +206,11 @@ function convertCode() {
   const htmlCode = `
 <div class="vscode-style">
 <button class="copy-code-btn" onclick="copyCodeToClipboard(this)">复制代码</button>
-<pre><code>${lineNumbers.split('\n').map(num => `<span class="line-number">${num}</span>`).join('\n')}
+<div style="display: flex;">
+  <pre style="margin: 0; padding: 0;"><code>${lineNumbers.split('\n').map(num => `<span class="line-number">${num}</span>`).join('\n')}
 </code></pre>
-<pre><code>${escapeHtml(input)}</code></pre>
+  <pre style="margin: 0; padding: 0; flex-grow: 1;"><code>${escapeHtml(input)}</code></pre>
+</div>
 </div>
 <style>
 .vscode-style {
@@ -217,8 +220,8 @@ function convertCode() {
   padding: 16px;
   border-radius: 5px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  display: flex;
   position: relative;
+  overflow-x: auto;
 }
 .vscode-style pre {
   margin: 0;
@@ -252,7 +255,7 @@ function convertCode() {
 </style>
 <script>
 function copyCodeToClipboard(button) {
-  const codeBlock = button.nextElementSibling.nextElementSibling;
+  const codeBlock = button.nextElementSibling.lastElementChild;
   const code = codeBlock.textContent;
   navigator.clipboard.writeText(code).then(() => {
     const originalText = button.textContent;
@@ -273,19 +276,21 @@ function copyCodeToClipboard(button) {
   // Markdown 转换
   const markdownCode = `
 \`\`\`html
-<div style="background-color: #1E1E1E; color: #D4D4D4; font-family: 'Consolas', 'Courier New', monospace; padding: 16px; border-radius: 5px; box-shadow: 0 2px 6px rgba(0,0,0,0.15); display: flex; position: relative;">
+<div style="background-color: #1E1E1E; color: #D4D4D4; font-family: 'Consolas', 'Courier New', monospace; padding: 16px; border-radius: 5px; box-shadow: 0 2px 6px rgba(0,0,0,0.15); position: relative; overflow-x: auto;">
   <button style="position: absolute; top: 10px; right: 10px; background-color: #3C3C3C; color: #CCCCCC; border: none; border-radius: 3px; padding: 5px 10px; font-size: 12px; cursor: pointer;" onclick="copyCodeToClipboard(this)">复制代码</button>
-  <pre style="margin: 0; padding: 0;">
-    <code>${lineNumbers.split('\n').map(num => `<span style="color: #858585; margin-right: 16px; user-select: none; display: inline-block; text-align: right; width: 2em;">${num}</span>`).join('\n')}
-    </code>
-  </pre>
-  <pre style="margin: 0; padding: 0;">
-    <code>${escapeHtml(input)}</code>
-  </pre>
+  <div style="display: flex;">
+    <pre style="margin: 0; padding: 0;">
+      <code>${lineNumbers.split('\n').map(num => `<span style="color: #858585; margin-right: 16px; user-select: none; display: inline-block; text-align: right; width: 2em;">${num}</span>`).join('\n')}
+      </code>
+    </pre>
+    <pre style="margin: 0; padding: 0; flex-grow: 1;">
+      <code>${escapeHtml(input)}</code>
+    </pre>
+  </div>
 </div>
 <script>
 function copyCodeToClipboard(button) {
-  const codeBlock = button.nextElementSibling.nextElementSibling;
+  const codeBlock = button.nextElementSibling.lastElementChild;
   const code = codeBlock.textContent;
   navigator.clipboard.writeText(code).then(() => {
     const originalText = button.textContent;
@@ -335,7 +340,7 @@ function copyToClipboard(elementId) {
 }
 
 function copyCodeToClipboard(button) {
-  const codeBlock = button.nextElementSibling.nextElementSibling;
+  const codeBlock = button.nextElementSibling.lastElementChild;
   const code = codeBlock.textContent;
   navigator.clipboard.writeText(code).then(() => {
     const originalText = button.textContent;
