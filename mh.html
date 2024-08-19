@@ -115,12 +115,13 @@
     function generateMarkdown() {
         var code = document.getElementById("input-code").value;
         var markdown = `\`\`\`html\n${code}\n\`\`\``;
+        markdown += `\n\n<button onclick="copyCode(this)">Copy Code</button>\n<script>\nfunction copyCode(btn) {\n  var code = btn.previousElementSibling.innerText;\n  navigator.clipboard.writeText(code).then(() => {\n    alert('Code copied to clipboard!');\n  });\n}\n<\/script>`;
         document.getElementById("markdown-output").textContent = markdown;
     }
 
     function generateHTML() {
         var code = document.getElementById("input-code").value;
-        var html = `<pre style="background-color: #282c34; color: #abb2bf; padding: 15px; border-radius: 5px; border: 1px solid #3a3f45; white-space: pre-wrap; overflow-x: auto;">\n<code>${escapeHTML(code)}</code>\n</pre>`;
+        var html = `<div class="code-container">\n<pre style="background-color: #282c34; color: #abb2bf; padding: 15px; border-radius: 5px; border: 1px solid #3a3f45; white-space: pre-wrap; overflow-x: auto;">\n<code>${escapeHTML(code)}</code>\n</pre>\n<button class="copy-button" onclick="copyCode(this)">Copy Code</button>\n</div>\n<script>\nfunction copyCode(btn) {\n  var code = btn.previousElementSibling.innerText;\n  navigator.clipboard.writeText(code).then(() => {\n    alert('Code copied to clipboard!');\n  });\n}\n<\/script>`;
         document.getElementById("html-output").textContent = html;
     }
 
