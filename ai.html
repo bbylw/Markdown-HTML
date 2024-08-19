@@ -2,36 +2,42 @@
 <html><head><base href="https://markdowntohtml.com/">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Markdown 与 HTML 双向转换器 - 苹果风格</title>
+<title>Markdown 与 HTML 转换器 - 精致版</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.0.3/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/turndown/7.1.1/turndown.min.js"></script>
 <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.0/beautify-html.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
 <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/github.min.css">
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+  
   :root {
-    --primary-color: #0070c9;
-    --secondary-color: #f5f5f7;
-    --text-color: #1d1d1f;
+    --primary-color: #007aff;
+    --secondary-color: #f2f2f7;
+    --text-color: #1c1c1e;
     --background-color: #ffffff;
-    --border-color: #d2d2d7;
+    --border-color: #d1d1d6;
+    --hover-color: #0056b3;
+    --success-color: #34c759;
+    --error-color: #ff3b30;
   }
   
   body {
-    font-family: 'SF Pro Text', 'SF Pro Icons', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+    font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     margin: 0;
     padding: 0;
     background-color: var(--background-color);
     color: var(--text-color);
-    line-height: 1.47059;
+    line-height: 1.5;
     font-weight: 400;
-    letter-spacing: -.022em;
   }
   
   .container {
-    max-width: 980px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 40px 20px;
   }
   
   header {
@@ -41,20 +47,25 @@
     top: 0;
     z-index: 1000;
     box-shadow: 0 1px 0 rgba(0,0,0,0.1);
+    padding: 20px 0;
   }
   
   h1 {
     text-align: center;
     color: var(--text-color);
-    font-size: 40px;
-    font-weight: 600;
-    margin: 20px 0;
+    font-size: 36px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.5px;
   }
   
   .tab {
     display: flex;
     justify-content: center;
-    margin-bottom: 40px;
+    margin: 40px 0;
+    background-color: var(--secondary-color);
+    border-radius: 12px;
+    padding: 5px;
   }
   
   .tab button {
@@ -62,29 +73,22 @@
     border: none;
     outline: none;
     cursor: pointer;
-    padding: 14px 30px;
-    transition: 0.3s;
-    font-size: 17px;
+    padding: 12px 24px;
+    transition: all 0.3s ease;
+    font-size: 16px;
     color: var(--text-color);
-    font-weight: 400;
-    position: relative;
+    font-weight: 500;
+    border-radius: 8px;
   }
   
-  .tab button::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 2px;
-    background-color: var(--primary-color);
-    transition: width 0.3s ease;
+  .tab button:hover {
+    background-color: rgba(0, 0, 0, 0.05);
   }
   
-  .tab button:hover::after,
-  .tab button.active::after {
-    width: 100%;
+  .tab button.active {
+    background-color: var(--background-color);
+    color: var(--primary-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
   
   .tabcontent {
@@ -92,7 +96,8 @@
     background-color: var(--background-color);
     padding: 40px;
     border-radius: 18px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
   }
   
   textarea, #editor {
@@ -104,7 +109,14 @@
     border-radius: 12px;
     font-size: 16px;
     resize: vertical;
-    font-family: 'SF Mono', monospace;
+    font-family: 'SF Mono', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+    transition: all 0.3s ease;
+  }
+  
+  textarea:focus, #editor:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
   }
   
   button {
@@ -115,16 +127,18 @@
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 17px;
+    font-size: 16px;
     margin: 4px 2px;
     cursor: pointer;
-    border-radius: 980px;
+    border-radius: 12px;
     transition: all 0.3s ease;
+    font-weight: 500;
   }
   
   button:hover {
-    background-color: #0051a5;
-    transform: scale(1.05);
+    background-color: var(--hover-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
   
   .output-container {
@@ -140,11 +154,17 @@
     background-color: var(--secondary-color);
     border-radius: 12px;
     min-height: 200px;
+    transition: all 0.3s ease;
+  }
+  
+  .output-box:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   }
   
   .ql-toolbar.ql-snow {
     border: 1px solid var(--border-color);
     border-radius: 12px 12px 0 0;
+    background-color: var(--secondary-color);
   }
   
   .ql-container.ql-snow {
@@ -160,11 +180,50 @@
     gap: 10px;
     margin-bottom: 20px;
   }
+  
+  pre {
+    background-color: #f6f8fa;
+    border-radius: 8px;
+    padding: 16px;
+    overflow-x: auto;
+  }
+  
+  code {
+    font-family: 'SF Mono', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+    font-size: 14px;
+  }
+  
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: var(--success-color);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: none;
+    z-index: 1000;
+  }
+  
+  @media (max-width: 768px) {
+    .output-container {
+      flex-direction: column;
+    }
+    
+    .container {
+      padding: 20px 10px;
+    }
+    
+    .tabcontent {
+      padding: 20px;
+    }
+  }
 </style>
 </head>
 <body>
 <header>
-  <h1>Markdown 与 HTML 双向转换器</h1>
+  <h1>Markdown 与 HTML 转换器</h1>
 </header>
 <div class="container">
   <div class="tab">
@@ -173,13 +232,13 @@
   </div>
 
   <div id="CodeView" class="tabcontent">
-    <textarea id="input" placeholder="在此输入Markdown或HTML代码..."></textarea>
+    <textarea id="input" placeholder="在此输入 Markdown 或 HTML 代码..."></textarea>
     <div class="button-group">
-      <button onclick="convertToHTML()">转换为HTML</button>
-      <button onclick="convertToMarkdown()">转换为Markdown</button>
+      <button onclick="convertToHTML()">转换为 HTML</button>
+      <button onclick="convertToMarkdown()">转换为 Markdown</button>
       <button onclick="formatCode()">格式化代码</button>
-      <button onclick="copyOutput('html')">复制HTML</button>
-      <button onclick="copyOutput('markdown')">复制Markdown</button>
+      <button onclick="copyOutput('html')">复制 HTML</button>
+      <button onclick="copyOutput('markdown')">复制 Markdown</button>
     </div>
     <div class="output-container">
       <div class="output-box">
@@ -188,7 +247,7 @@
       </div>
       <div class="output-box">
         <h3>Markdown 输出</h3>
-        <pre id="markdownOutput"></pre>
+        <pre><code id="markdownOutput"></code></pre>
       </div>
     </div>
   </div>
@@ -196,11 +255,13 @@
   <div id="WritingView" class="tabcontent">
     <div id="editor"></div>
     <div class="button-group">
-      <button onclick="syncContentToMarkdown()">同步为Markdown</button>
-      <button onclick="syncContentToHTML()">同步为HTML</button>
+      <button onclick="syncContentToMarkdown()">同步至 Markdown</button>
+      <button onclick="syncContentToHTML()">同步至 HTML</button>
     </div>
   </div>
 </div>
+
+<div id="toast" class="toast"></div>
 
 <script>
 let quill;
@@ -225,7 +286,7 @@ function openTab(evt, tabName) {
         toolbar: [
           [{ 'header': [1, 2, 3, false] }],
           ['bold', 'italic', 'underline', 'strike'],
-          ['link', 'image'],
+          ['link', 'image', 'code-block'],
           [{ 'list': 'ordered'}, { 'list': 'bullet' }],
           ['clean']
         ]
@@ -239,6 +300,8 @@ function convertToHTML() {
   const htmlOutput = marked(input);
   document.getElementById('htmlOutput').innerHTML = htmlOutput;
   document.getElementById('markdownOutput').textContent = input;
+  hljs.highlightAll();
+  showToast('成功转换为 HTML！');
 }
 
 function convertToMarkdown() {
@@ -247,6 +310,8 @@ function convertToMarkdown() {
   const markdownOutput = turndownService.turndown(input);
   document.getElementById('htmlOutput').innerHTML = input;
   document.getElementById('markdownOutput').textContent = markdownOutput;
+  hljs.highlightAll();
+  showToast('成功转换为 Markdown！');
 }
 
 function formatCode() {
@@ -260,12 +325,13 @@ function formatCode() {
     const formattedMarkdown = input.split('\n').map(line => line.trim()).join('\n');
     document.getElementById('input').value = formattedMarkdown;
   }
+  showToast('代码格式化成功！');
 }
 
 function copyOutput(type) {
   const output = type === 'html' ? document.getElementById('htmlOutput').innerHTML : document.getElementById('markdownOutput').textContent;
   navigator.clipboard.writeText(output).then(() => {
-    alert(`已复制${type === 'html' ? 'HTML' : 'Markdown'}到剪贴板！`);
+    showToast(`${type === 'html' ? 'HTML' : 'Markdown'} 已复制到剪贴板！`);
   });
 }
 
@@ -276,7 +342,8 @@ function syncContentToMarkdown() {
   document.getElementById('input').value = markdownContent;
   document.getElementById('htmlOutput').innerHTML = editorContent;
   document.getElementById('markdownOutput').textContent = markdownContent;
-  alert('内容已同步为Markdown和HTML格式！');
+  hljs.highlightAll();
+  showToast('内容已同步到 Markdown 和 HTML 格式！');
 }
 
 function syncContentToHTML() {
@@ -286,12 +353,22 @@ function syncContentToHTML() {
   const turndownService = new TurndownService();
   const markdownContent = turndownService.turndown(editorContent);
   document.getElementById('markdownOutput').textContent = markdownContent;
-  alert('内容已同步为HTML和Markdown格式！');
+  hljs.highlightAll();
+  showToast('内容已同步到 HTML 和 Markdown 格式！');
+}
+
+function showToast(message) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.style.display = 'block';
+  setTimeout(() => {
+    toast.style.display = 'none';
+  }, 3000);
 }
 
 document.getElementById("defaultOpen").click();
 
-// 自动检测并转换输入
+// Auto-detect and convert input
 document.getElementById('input').addEventListener('input', function() {
   const input = this.value.trim();
   if (input.startsWith('<')) {
@@ -300,6 +377,9 @@ document.getElementById('input').addEventListener('input', function() {
     convertToHTML();
   }
 });
+
+// Initialize highlight.js
+hljs.highlightAll();
 </script>
 </body>
 </html>
