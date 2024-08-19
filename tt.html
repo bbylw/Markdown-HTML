@@ -92,6 +92,29 @@
         padding: 20px;
         box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
     }
+    #ip-info {
+        text-align: left;
+        font-size: 14px;
+        line-height: 1.6;
+    }
+    #ip-info strong {
+        color: #5a67d8;
+    }
+    .proxy-status {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+    .proxy-yes {
+        background-color: #fecaca;
+        color: #dc2626;
+    }
+    .proxy-no {
+        background-color: #d1fae5;
+        color: #059669;
+    }
 </style>
 </head>
 <body>
@@ -153,18 +176,30 @@
 
     function getIPInfo() {
         var ipAddress = document.getElementById("ip-input").value;
-        var url = ipAddress ? `https://ipapi.co/${ipAddress}/json/` : 'https://ipapi.co/json/';
+        var url = `https://ipapi.com/ip_api.php?ip=${ipAddress}`;
         
         fetch(url)
             .then(response => response.json())
             .then(data => {
+                var proxyStatus = data.security.is_proxy ? 
+                    '<span class="proxy-status proxy-yes">检测到代理</span>' : 
+                    '<span class="proxy-status proxy-no">未检测到代理</span>';
+                
                 var info = `
-                    IP: ${data.ip}<br>
-                    国家: ${data.country_name}<br>
-                    地区: ${data.region}<br>
-                    城市: ${data.city}<br>
-                    ISP: ${data.org}<br>
-                    经纬度: ${data.latitude}, ${data.longitude}
+                    <strong>IP:</strong> ${data.ip}<br>
+                    <strong>国家:</strong> ${data.country_name}<br>
+                    <strong>地区:</strong> ${data.region}<br>
+                    <strong>城市:</strong> ${data.city}<br>
+                    <strong>ISP:</strong> ${data.connection.isp}<br>
+                    <strong>经纬度:</strong> ${data.latitude}, ${data.longitude}<br>
+                    <strong>时区:</strong> ${data.time_zone.id}<br>
+                    <strong>邮政编码:</strong> ${data.postal}<br>
+                    <strong>ASN:</strong> ${data.connection.asn}<br>
+                    <strong>组织:</strong> ${data.connection.org}<br>
+                    <strong>连接类型:</strong> ${data.connection.type}<br>
+                    ${proxyStatus}<br>
+                    <strong>威胁等级:</strong> ${data.security.threat_level}<br>
+                    <strong>滥用信度得分:</strong> ${data.security.abuse_velocity}
                 `;
                 document.getElementById("ip-info").innerHTML = info;
             })
