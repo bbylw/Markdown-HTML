@@ -115,7 +115,6 @@
     function generateMarkdown() {
         var code = document.getElementById("input-code").value;
         var markdown = `\`\`\`html\n${code}\n\`\`\``;
-        markdown += `\n\n<button onclick="copyCode(this)">Copy Code</button>\n<script>\nfunction copyCode(btn) {\n  var code = btn.previousElementSibling.innerText;\n  navigator.clipboard.writeText(code).then(() => {\n    alert('Code copied to clipboard!');\n  });\n}\n<\/script>`;
         document.getElementById("markdown-output").textContent = markdown;
     }
 
