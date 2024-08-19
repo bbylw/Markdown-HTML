@@ -33,6 +33,10 @@
             padding: 10px;
             border-radius: 5px;
             overflow-x: auto;
+            white-space: pre-wrap; /* Wrap long lines */
+        }
+        #markdown-output, #html-output {
+            white-space: pre-wrap; /* Wrap long lines */
         }
     </style>
 </head>
@@ -62,7 +66,7 @@
 
     function generateHTML() {
         var code = document.getElementById("input-code").value;
-        var html = `<pre><code>\n${escapeHTML(code)}\n</code></pre>\n<button onclick="copyCode(this)">Copy Code</button>\n<script>\nfunction copyCode(btn) {\n  var code = btn.previousElementSibling.innerText;\n  navigator.clipboard.writeText(code).then(() => {\n    alert('Code copied to clipboard!');\n  });\n}\n</script>`;
+        var html = `<pre><code>${escapeHTML(code)}</code></pre>\n<button onclick="copyCode(this)">Copy Code</button>\n<script>\nfunction copyCode(btn) {\n  var code = btn.previousElementSibling.innerText;\n  navigator.clipboard.writeText(code).then(() => {\n    alert('Code copied to clipboard!');\n  });\n}\n<\/script>`;
         document.getElementById("html-output").textContent = html;
     }
 
