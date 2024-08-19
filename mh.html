@@ -7,12 +7,27 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 0;
+            background-color: #282c34;
+            color: #abb2bf;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
         .container {
             max-width: 800px;
-            margin: auto;
+            width: 100%;
+            padding: 20px;
+            background-color: #1e2127;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            color: #61dafb;
+            font-size: 24px;
+            text-align: center;
         }
         textarea {
             width: 100%;
@@ -21,17 +36,32 @@
             font-family: monospace;
             font-size: 14px;
             padding: 10px;
+            background-color: #1e1e1e;
+            color: #dcdcdc;
+            border: 1px solid #3a3f45;
+            border-radius: 5px;
+            resize: none;
         }
         button {
             padding: 10px 20px;
-            margin: 5px 0;
+            margin: 5px 5px 20px 0;
             font-size: 16px;
+            color: #ffffff;
+            background-color: #61dafb;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #4fa4d5;
         }
         pre {
-            background-color: #f4f4f4;
-            padding: 10px;
+            background-color: #1e1e1e;
+            padding: 15px;
             border-radius: 5px;
+            border: 1px solid #3a3f45;
+            color: #dcdcdc;
             overflow-x: auto;
             white-space: pre-wrap; /* Wrap long lines */
         }
