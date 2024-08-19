@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<base href="https://raw.githubusercontent.com/davidshimjs/qrcodejs/master/" target="_blank">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>多功能工具箱</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        background-color: #f5f5f5;
+    }
+    .container {
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        max-width: 600px;
+        width: 100%;
+    }
+    h1 {
+        text-align: center;
+        color: #2c3e50;
+        font-size: 28px;
+        margin-bottom: 30px;
+    }
+    h2 {
+        color: #34495e;
+        font-size: 22px;
+        margin-top: 0;
+    }
+    .tool {
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 25px;
+    }
+    input, select, button, textarea {
+        display: block;
+        width: 100%;
+        margin: 10px 0;
+        padding: 12px;
+        border: 1px solid #bdc3c7;
+        border-radius: 6px;
+        box-sizing: border-box;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+    input:focus, select:focus, textarea:focus {
+        outline: none;
+        border-color: #3498db;
+        box-shadow: 0 0 0 2px rgba(52,152,219,0.2);
+    }
+    button {
+        background-color: #3498db;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: background-color 0.3s;
+    }
+    button:hover {
+        background-color: #2980b9;
+    }
+    #qrcode, #uuid-result, #ip-info {
+        text-align: center;
+        margin-top: 15px;
+        word-break: break-all;
+        background-color: #ecf0f1;
+        border-radius: 6px;
+        padding: 15px;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>多功能工具箱</h1>
+    
+    <div class="tool">
+        <h2>二维码生成器</h2>
+        <select id="qr-type">
+            <option value="url">网址</option>
+            <option value="text">文本</option>
+        </select>
+        <input type="text" id="qr-input" placeholder="请输入网址或文本">
+        <button onclick="generateQR()">生成二维码</button>
+        <div id="qrcode"></div>
+    </div>
+    
+    <div class="tool">
+        <h2>UUID 生成器</h2>
+        <button onclick="generateUUID()">生成 UUID</button>
+        <div id="uuid-result"></div>
+    </div>
+    
+    <div class="tool">
+        <h2>IP 信息查询</h2>
+        <input type="text" id="ip-input" placeholder="输入IP地址（可选，默认查询当前IP）">
+        <button onclick="getIPInfo()">查询 IP 信息</button>
+        <div id="ip-info"></div>
+    </div>
+</div>
+
+<script>
+    function generateQR() {
+        var input = document.getElementById("qr-input").value;
+        
+        if (input === "") {
+            alert("请输入内容！");
+            return;
+        }
+        
+        document.getElementById("qrcode").innerHTML = '';
+        var qrcode = new QRCode(document.getElementById("qrcode"), {
+            text: input,
+            width: 128,
+            height: 128,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.H
+        });
+    }
+
+    function generateUUID() {
+        var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+        document.getElementById("uuid-result").textContent = uuid;
+    }
+
+    function getIPInfo() {
+        var ipAddress = document.getElementById("ip-input").value;
+        var url = ipAddress ? `https://ipapi.co/${ipAddress}/json/` : 'https://ipapi.co/json/';
+        
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                var info = `
+                    IP: ${data.ip}<br>
+                    国家: ${data.country_name}<br>
+                    地区: ${data.region}<br>
+                    城市: ${data.city}<br>
+                    ISP: ${data.org}<br>
+                    经纬度: ${data.latitude}, ${data.longitude}
+                `;
+                document.getElementById("ip-info").innerHTML = info;
+            })
+            .catch(error => {
+                document.getElementById("ip-info").textContent = "获取IP信息失败，请稍后再试。";
+                console.error('Error:', error);
+            });
+    }
+</script>
+</body>
+</html>
