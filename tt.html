@@ -40,6 +40,12 @@
         margin-top: 0;
         margin-bottom: 20px;
     }
+    h3 {
+        color: #4a5568;
+        font-size: 20px;
+        margin-top: 20px;
+        margin-bottom: 10px;
+    }
     .tool {
         background-color: #ffffff;
         border-radius: 15px;
@@ -100,21 +106,6 @@
     #ip-info strong {
         color: #5a67d8;
     }
-    .proxy-status {
-        display: inline-block;
-        padding: 5px 10px;
-        border-radius: 5px;
-        font-weight: bold;
-        margin-top: 10px;
-    }
-    .proxy-yes {
-        background-color: #fecaca;
-        color: #dc2626;
-    }
-    .proxy-no {
-        background-color: #d1fae5;
-        color: #059669;
-    }
 </style>
 </head>
 <body>
@@ -140,10 +131,6 @@
     
     <div class="tool">
         <h2>IP 信息查询</h2>
-        <select id="ip-api-select">
-            <option value="useragentinfo">中国友好 API</option>
-            <option value="ipapi">国际 API</option>
-        </select>
         <input type="text" id="ip-input" placeholder="输入IP地址（可选，默认查询当前IP）">
         <button onclick="getIPInfo()">查询 IP 信息</button>
         <div id="ip-info"></div>
@@ -180,56 +167,41 @@
 
     function getIPInfo() {
         var ipAddress = document.getElementById("ip-input").value;
-        var apiSelect = document.getElementById("ip-api-select").value;
-        var url;
+        var useragentinfoUrl = 'https://ip.useragentinfo.com/json' + (ipAddress ? '?ip=' + ipAddress : '');
+        var ipapiUrl = ipAddress ? `https://ipapi.co/${ipAddress}/json/` : 'https://ipapi.co/json/';
         
-        if (apiSelect === "useragentinfo") {
-            url = 'https://ip.useragentinfo.com/json';
-            if (ipAddress) {
-                url += '?ip=' + ipAddress;
-            }
-        } else {
-            url = ipAddress ? `https://ipapi.co/${ipAddress}/json/` : 'https://ipapi.co/json/';
-        }
-        
-        fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                var info;
-                if (apiSelect === "useragentinfo") {
-                    info = `
-                        <strong>API 来源:</strong> UseragentInfo API<br>
-                        <strong>IP:</strong> ${data.ip}<br>
-                        <strong>国家:</strong> ${data.country}<br>
-                        <strong>省份:</strong> ${data.province}<br>
-                        <strong>城市:</strong> ${data.city}<br>
-                        <strong>ISP:</strong> ${data.isp}<br>
-                        <strong>网络类型:</strong> ${data.net_str}<br>
-                    `;
-                } else {
-                    var proxyStatus = data.proxy ? 
-                        '<span class="proxy-status proxy-yes">检测到代理</span>' : 
-                        '<span class="proxy-status proxy-no">未检测到代理</span>';
-                    info = `
-                        <strong>API 来源:</strong> IPAPI.co<br>
-                        <strong>IP:</strong> ${data.ip}<br>
-                        <strong>国家:</strong> ${data.country_name}<br>
-                        <strong>地区:</strong> ${data.region}<br>
-                        <strong>城市:</strong> ${data.city}<br>
-                        <strong>ISP:</strong> ${data.org}<br>
-                        <strong>经纬度:</strong> ${data.latitude}, ${data.longitude}<br>
-                        <strong>时区:</strong> ${data.timezone}<br>
-                        <strong>邮政编码:</strong> ${data.postal}<br>
-                        <strong>ASN:</strong> ${data.asn}<br>
-                        ${proxyStatus}<br>
-                    `;
-                }
-                document.getElementById("ip-info").innerHTML = info;
-            })
-            .catch(error => {
-                document.getElementById("ip-info").textContent = "获取IP信息失败，请稍后再试。";
-                console.error('Error:', error);
-            });
+        Promise.all([
+            fetch(useragentinfoUrl).then(response => response.json()),
+            fetch(ipapiUrl).then(response => response.json())
+        ])
+        .then(([useragentinfoData, ipapiData]) => {
+            var info = `
+                <h3>中国友好 API (UseragentInfo)</h3>
+                <strong>IP:</strong> ${useragentinfoData.ip}<br>
+                <strong>国家:</strong> ${useragentinfoData.country}<br>
+                <strong>省份:</strong> ${useragentinfoData.province}<br>
+                <strong>城市:</strong> ${useragentinfoData.city}<br>
+                <strong>ISP:</strong> ${useragentinfoData.isp}<br>
+                <strong>网络类型:</strong> ${useragentinfoData.net_str}<br>
+                <br>
+                <h3>国际 API (IPAPI.co)</h3>
+                <strong>IP:</strong> ${ipapiData.ip}<br>
+                <strong>国家:</strong> ${ipapiData.country_name}<br>
+                <strong>地区:</strong> ${ipapiData.region}<br>
+                <strong>城市:</strong> ${ipapiData.city}<br>
+                <strong>ISP:</strong> ${ipapiData.org}<br>
+                <strong>经纬度:</strong> ${ipapiData.latitude}, ${ipapiData.longitude}<br>
+                <strong>时区:</strong> ${ipapiData.timezone}<br>
+                <strong>邮政编码:</strong> ${ipapiData.postal}<br>
+                <strong>ASN:</strong> ${ipapiData.asn}<br>
+                <strong>代理状态:</strong> ${ipapiData.proxy ? '检测到代理' : '未检测到代理'}<br>
+            `;
+            document.getElementById("ip-info").innerHTML = info;
+        })
+        .catch(error => {
+            document.getElementById("ip-info").textContent = "获取IP信息失败，请稍后再试。";
+            console.error('Error:', error);
+        });
     }
 </script>
 </body>
