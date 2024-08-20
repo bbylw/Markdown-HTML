@@ -169,33 +169,69 @@
         var ipAddress = document.getElementById("ip-input").value;
         var useragentinfoUrl = 'https://ip.useragentinfo.com/json' + (ipAddress ? '?ip=' + ipAddress : '');
         var ipapiUrl = ipAddress ? `https://ipapi.co/${ipAddress}/json/` : 'https://ipapi.co/json/';
-        
-        Promise.all([
+        var ipApiComUrl = `http://ip-api.com/json/${ipAddress}`;
+
+        Promise.allSettled([
             fetch(useragentinfoUrl).then(response => response.json()),
-            fetch(ipapiUrl).then(response => response.json())
+            fetch(ipapiUrl).then(response => response.json()),
+            fetch(ipApiComUrl).then(response => response.json())
         ])
-        .then(([useragentinfoData, ipapiData]) => {
-            var info = `
-                <h3>中国友好 API (UseragentInfo)</h3>
-                <strong>IP:</strong> ${useragentinfoData.ip}<br>
-                <strong>国家:</strong> ${useragentinfoData.country}<br>
-                <strong>省份:</strong> ${useragentinfoData.province}<br>
-                <strong>城市:</strong> ${useragentinfoData.city}<br>
-                <strong>ISP:</strong> ${useragentinfoData.isp}<br>
-                <strong>网络类型:</strong> ${useragentinfoData.net_str}<br>
-                <br>
-                <h3>国际 API (IPAPI.co)</h3>
-                <strong>IP:</strong> ${ipapiData.ip}<br>
-                <strong>国家:</strong> ${ipapiData.country_name}<br>
-                <strong>地区:</strong> ${ipapiData.region}<br>
-                <strong>城市:</strong> ${ipapiData.city}<br>
-                <strong>ISP:</strong> ${ipapiData.org}<br>
-                <strong>经纬度:</strong> ${ipapiData.latitude}, ${ipapiData.longitude}<br>
-                <strong>时区:</strong> ${ipapiData.timezone}<br>
-                <strong>邮政编码:</strong> ${ipapiData.postal}<br>
-                <strong>ASN:</strong> ${ipapiData.asn}<br>
-                <strong>代理状态:</strong> ${ipapiData.proxy ? '检测到代理' : '未检测到代理'}<br>
-            `;
+        .then(([useragentinfoResult, ipapiResult, ipApiComResult]) => {
+            var info = '';
+
+            if (useragentinfoResult.status === 'fulfilled') {
+                var useragentinfoData = useragentinfoResult.value;
+                info += `
+                    <h3>中国友好 API (UseragentInfo)</h3>
+                    <strong>IP:</strong> ${useragentinfoData.ip}<br>
+                    <strong>国家:</strong> ${useragentinfoData.country}<br>
+                    <strong>省份:</strong> ${useragentinfoData.province}<br>
+                    <strong>城市:</strong> ${useragentinfoData.city}<br>
+                    <strong>ISP:</strong> ${useragentinfoData.isp}<br>
+                    <strong>网络类型:</strong> ${useragentinfoData.net_str}<br>
+                    <br>
+                `;
+            }
+
+            if (ipapiResult.status === 'fulfilled') {
+                var ipapiData = ipapiResult.value;
+                info += `
+                    <h3>国际 API 1 (IPAPI.co)</h3>
+                    <strong>IP:</strong> ${ipapiData.ip}<br>
+                    <strong>国家:</strong> ${ipapiData.country_name}<br>
+                    <strong>地区:</strong> ${ipapiData.region}<br>
+                    <strong>城市:</strong> ${ipapiData.city}<br>
+                    <strong>ISP:</strong> ${ipapiData.org}<br>
+                    <strong>经纬度:</strong> ${ipapiData.latitude}, ${ipapiData.longitude}<br>
+                    <strong>时区:</strong> ${ipapiData.timezone}<br>
+                    <strong>邮政编码:</strong> ${ipapiData.postal}<br>
+                    <strong>ASN:</strong> ${ipapiData.asn}<br>
+                    <strong>代理状态:</strong> ${ipapiData.proxy ? '检测到代理' : '未检测到代理'}<br>
+                    <br>
+                `;
+            }
+
+            if (ipApiComResult.status === 'fulfilled') {
+                var ipApiComData = ipApiComResult.value;
+                info += `
+                    <h3>国际 API 2 (IP-API.com)</h3>
+                    <strong>IP:</strong> ${ipApiComData.query}<br>
+                    <strong>国家:</strong> ${ipApiComData.country}<br>
+                    <strong>地区:</strong> ${ipApiComData.regionName}<br>
+                    <strong>城市:</strong> ${ipApiComData.city}<br>
+                    <strong>ISP:</strong> ${ipApiComData.isp}<br>
+                    <strong>经纬度:</strong> ${ipApiComData.lat}, ${ipApiComData.lon}<br>
+                    <strong>时区:</strong> ${ipApiComData.timezone}<br>
+                    <strong>邮政编码:</strong> ${ipApiComData.zip}<br>
+                    <strong>AS:</strong> ${ipApiComData.as}<br>
+                    <strong>代理状态:</strong> ${ipApiComData.proxy ? '检测到代理' : '未检测到代理'}<br>
+                `;
+            }
+
+            if (info === '') {
+                info = "获取IP信息失败，请稍后再试。";
+            }
+
             document.getElementById("ip-info").innerHTML = info;
         })
         .catch(error => {
