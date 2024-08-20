@@ -176,12 +176,12 @@
 
     function getIPInfo() {
         var ipAddress = document.getElementById("ip-input").value;
-        var url = `https://ipapi.com/ip_api.php?ip=${ipAddress}`;
+        var url = ipAddress ? `https://ipapi.co/${ipAddress}/json/` : 'https://ipapi.co/json/';
         
         fetch(url)
             .then(response => response.json())
             .then(data => {
-                var proxyStatus = data.security.is_proxy ? 
+                var proxyStatus = data.proxy ? 
                     '<span class="proxy-status proxy-yes">检测到代理</span>' : 
                     '<span class="proxy-status proxy-no">未检测到代理</span>';
                 
@@ -190,16 +190,12 @@
                     <strong>国家:</strong> ${data.country_name}<br>
                     <strong>地区:</strong> ${data.region}<br>
                     <strong>城市:</strong> ${data.city}<br>
-                    <strong>ISP:</strong> ${data.connection.isp}<br>
+                    <strong>ISP:</strong> ${data.org}<br>
                     <strong>经纬度:</strong> ${data.latitude}, ${data.longitude}<br>
-                    <strong>时区:</strong> ${data.time_zone.id}<br>
+                    <strong>时区:</strong> ${data.timezone}<br>
                     <strong>邮政编码:</strong> ${data.postal}<br>
-                    <strong>ASN:</strong> ${data.connection.asn}<br>
-                    <strong>组织:</strong> ${data.connection.org}<br>
-                    <strong>连接类型:</strong> ${data.connection.type}<br>
+                    <strong>ASN:</strong> ${data.asn}<br>
                     ${proxyStatus}<br>
-                    <strong>威胁等级:</strong> ${data.security.threat_level}<br>
-                    <strong>滥用信度得分:</strong> ${data.security.abuse_velocity}
                 `;
                 document.getElementById("ip-info").innerHTML = info;
             })
