@@ -1,402 +1,48 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>代码转换工具 - VS Code 风格</title>
-<style>
-:root {
-  --primary-color: #4EC9B0;
-  --secondary-color: #007ACC;
-  --bg-color: #1E1E1E;
-  --text-color: #D4D4D4;
-  --border-color: #3C3C3C;
-  --header-bg: #252526;
-  --card-bg: #2D2D2D;
-}
-
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  line-height: 1.6;
-  margin: 0;
-  padding: 0;
-}
-
-.container {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 40px 20px;
-}
-
-h1 {
-  color: var(--primary-color);
-  font-size: 2.5em;
-  text-align: center;
-  margin-bottom: 40px;
-  text-shadow: 0 0 10px rgba(78, 201, 176, 0.3);
-}
-
-.card {
-  background-color: var(--card-bg);
-  border-radius: 8px;
-  padding: 30px;
-  margin-bottom: 40px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  transition: all 0.3s ease;
-}
-
-.card:hover {
-  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-  transform: translateY(-5px);
-}
-
-textarea {
-  width: 100%;
-  height: 200px;
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  border: 1px solid var(--border-color);
-  padding: 15px;
-  font-family: 'Consolas', 'Courier New', monospace;
-  font-size: 14px;
-  border-radius: 5px;
-  resize: vertical;
-  transition: all 0.3s ease;
-}
-
-textarea:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 2px rgba(78, 201, 176, 0.2);
-  outline: none;
-}
-
-button {
-  background-color: var(--secondary-color);
-  color: #FFFFFF;
-  border: none;
-  padding: 12px 20px;
-  font-size: 16px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 15px;
-  width: 100%;
-}
-
-button:hover {
-  background-color: #005fa3;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 122, 204, 0.3);
-}
-
-.output-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.output-title {
-  font-size: 1.2em;
-  font-weight: bold;
-  color: var(--primary-color);
-}
-
-.output-content {
-  background-color: var(--bg-color);
-  border: 1px solid var(--border-color);
-  border-radius: 5px;
-  padding: 15px;
-  font-family: 'Consolas', 'Courier New', monospace;
-  font-size: 14px;
-  white-space: pre-wrap;
-  word-break: break-all;
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-#preview-header {
-  color: var(--primary-color);
-  font-size: 1.2em;
-  font-weight: bold;
-  margin-bottom: 15px;
-}
-
-.vscode-style {
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  font-family: 'Consolas', 'Courier New', monospace;
-  padding: 16px;
-  border-radius: 5px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  position: relative;
-  overflow-x: auto;
-}
-
-.line-number {
-  color: #858585;
-  margin-right: 16px;
-  user-select: none;
-}
-
-.copy-code-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: rgba(60, 60, 60, 0.7);
-  color: #CCCCCC;
-  border: none;
-  border-radius: 3px;
-  padding: 5px 10px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.copy-code-btn:hover {
-  background-color: rgba(78, 201, 176, 0.7);
-  color: #FFFFFF;
-}
-
-.loading {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0,0,0,0.5);
-  z-index: 9999;
-  backdrop-filter: blur(5px);
-}
-
-.spinner {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 50px;
-  height: 50px;
-  border: 3px solid var(--primary-color);
-  border-top: 3px solid transparent;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: translate(-50%, -50%) rotate(0deg); }
-  100% { transform: translate(-50%, -50%) rotate(360deg); }
-}
-
-@media (max-width: 768px) {
-  .container {
-    padding: 20px 10px;
-  }
-  
-  h1 {
-    font-size: 2em;
-  }
-  
-  .card {
-    padding: 20px;
-  }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP 查询</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        #ip {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>代码转换工具 - VS Code 风格</h1>
-    
-    <div class="card">
-      <textarea id="input" placeholder="在此处粘贴您的代码..."></textarea>
-      <button onclick="convertCode()">转换代码</button>
+    <div class="container">
+        <h1>IP 查询</h1>
+        <p id="ip">正在获取IP...</p>
+        <p>此 IP 是你访问本站的 IP</p>
     </div>
-    
-    <div class="card">
-      <div class="output-header">
-        <span class="output-title">HTML 输出</span>
-        <button class="copy-code-btn" onclick="copyToClipboard('html-output')">复制代码</button>
-      </div>
-      <pre class="output-content" id="html-output"></pre>
-    </div>
-    
-    <div class="card">
-      <div class="output-header">
-        <span class="output-title">Markdown 输出</span>
-        <button class="copy-code-btn" onclick="copyToClipboard('markdown-output')">复制代码</button>
-      </div>
-      <pre class="output-content" id="markdown-output"></pre>
-    </div>
-
-    <div class="card">
-      <div id="preview-header">预览效果：</div>
-      <div id="preview-content"></div>
-    </div>
-  </div>
-
-  <div id="loading" class="loading">
-    <div class="spinner"></div>
-  </div>
-
-<script>
-function convertCode() {
-  showLoading();
-  setTimeout(() => {
-    const input = document.getElementById('input').value;
-    const htmlOutput = document.getElementById('html-output');
-    const markdownOutput = document.getElementById('markdown-output');
-    const previewContent = document.getElementById('preview-content');
-
-    const lines = input.split('\n');
-    const lineNumbers = lines.map((_, index) => index + 1).join('\n');
-
-    // HTML 转换
-    const htmlCode = `
-<div class="vscode-style">
-<button class="copy-code-btn" onclick="copyCodeToClipboard(this)">复制代码</button>
-<div style="display: flex;">
-  <pre style="margin: 0; padding: 0;"><code>${lineNumbers.split('\n').map(num => `<span class="line-number">${num}</span>`).join('\n')}
-</code></pre>
-  <pre style="margin: 0; padding: 0; flex-grow: 1;"><code>${escapeHtml(input)}</code></pre>
-</div>
-</div>
-<style>
-.vscode-style {
-  background-color: #1E1E1E;
-  color: #D4D4D4;
-  font-family: 'Consolas', 'Courier New', monospace;
-  padding: 16px;
-  border-radius: 5px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  position: relative;
-  overflow-x: auto;
-}
-.vscode-style pre {
-  margin: 0;
-  padding: 0;
-}
-.line-number {
-  color: #858585;
-  margin-right: 16px;
-  user-select: none;
-  display: inline-block;
-  text-align: right;
-  width: 2em;
-}
-.copy-code-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: rgba(60, 60, 60, 0.7);
-  color: #CCCCCC;
-  border: none;
-  border-radius: 3px;
-  padding: 5px 10px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-.copy-code-btn:hover {
-  background-color: rgba(78, 201, 176, 0.7);
-  color: #FFFFFF;
-}
-</style>
-<script>
-function copyCodeToClipboard(button) {
-  const codeBlock = button.nextElementSibling.lastElementChild;
-  const code = codeBlock.textContent;
-  navigator.clipboard.writeText(code).then(() => {
-    const originalText = button.textContent;
-    button.textContent = '已复制！';
-    button.style.backgroundColor = 'rgba(78, 201, 176, 0.7)';
-    setTimeout(() => {
-      button.textContent = originalText;
-      button.style.backgroundColor = '';
-    }, 2000);
-  }, (err) => {
-    console.error('无法复制文本: ', err);
-  });
-}
-<\/script>`;
-
-    htmlOutput.textContent = htmlCode;
-
-    // Markdown 转换
-    const markdownCode = `
-\`\`\`html
-<div style="background-color: #1E1E1E; color: #D4D4D4; font-family: 'Consolas', 'Courier New', monospace; padding: 16px; border-radius: 5px; box-shadow: 0 2px 6px rgba(0,0,0,0.15); position: relative; overflow-x: auto;">
-  <button style="position: absolute; top: 10px; right: 10px; background-color: rgba(60, 60, 60, 0.7); color: #CCCCCC; border: none; border-radius: 3px; padding: 5px 10px; font-size: 12px; cursor: pointer; transition: all 0.3s;" onclick="copyCodeToClipboard(this)">复制代码</button>
-  <div style="display: flex;">
-    <pre style="margin: 0; padding: 0;">
-      <code>${lineNumbers.split('\n').map(num => `<span style="color: #858585; margin-right: 16px; user-select: none; display: inline-block; text-align: right; width: 2em;">${num}</span>`).join('\n')}
-      </code>
-    </pre>
-    <pre style="margin: 0; padding: 0; flex-grow: 1;">
-      <code>${escapeHtml(input)}</code>
-    </pre>
-  </div>
-</div>
-<script>
-function copyCodeToClipboard(button) {
-  const codeBlock = button.nextElementSibling.lastElementChild;
-  const code = codeBlock.textContent;
-  navigator.clipboard.writeText(code).then(() => {
-    const originalText = button.textContent;
-    button.textContent = '已复制！';
-    button.style.backgroundColor = 'rgba(78, 201, 176, 0.7)';
-    setTimeout(() => {
-      button.textContent = originalText;
-      button.style.backgroundColor = '';
-    }, 2000);
-  }, (err) => {
-    console.error('无法复制文本: ', err);
-  });
-}
-<\/script>
-\`\`\``;
-
-    markdownOutput.textContent = markdownCode;
-
-    // 预览效果
-    previewContent.innerHTML = htmlCode;
-    hideLoading();
-  }, 500);
-}
-
-function escapeHtml(unsafe) {
-  return unsafe
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-function copyToClipboard(elementId) {
-  const element = document.getElementById(elementId);
-  const text = element.textContent;
-  navigator.clipboard.writeText(text).then(() => {
-    const button = element.previousElementSibling.querySelector('.copy-code-btn');
-    const originalText = button.textContent;
-    button.textContent = '已复制！';
-    button.style.backgroundColor = 'rgba(78, 201, 176, 0.7)';
-    setTimeout(() => {
-      button.textContent = originalText;
-      button.style.backgroundColor = '';
-    }, 2000);
-  }, (err) => {
-    console.error('无法复制文本: ', err);
-  });
-}
-
-function showLoading() {
-  document.getElementById('loading').style.display = 'block';
-}
-
-function hideLoading() {
-  document.getElementById('loading').style.display = 'none';
-}
-</script>
+    <script>
+        fetch('https://api.ipify.org?format=json')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('ip').textContent = data.ip;
+            })
+            .catch(error => {
+                document.getElementById('ip').textContent = '无法获取IP';
+                console.error('Error:', error);
+            });
+    </script>
 </body>
 </html>
