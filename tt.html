@@ -1,148 +1,545 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IP 查询 | GitHub版</title>
+    <title>NETWORK LOCATOR | 精准网络基准集</title>
+    <!-- 引入高级字体 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;500&family=Outfit:wght@300;600;800&display=swap"
+        rel="stylesheet">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
+        :root {
+            --bg-base: #030303;
+            --accent: #00f0ff;
+            --accent-glow: rgba(0, 240, 255, 0.3);
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --text-main: #f0f0f5;
+            --text-dim: #88888f;
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-display: 'Outfit', sans-serif;
+            --ease: cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        * {
             margin: 0;
-            padding: 20px;
-            background-color: #f0f0f0;
+            padding: 0;
+            box-sizing: border-box;
+            outline: none;
         }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-display);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
-        h1 {
-            text-align: center;
-        }
-        #main-ip {
-            font-size: 2em;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        table {
+
+        /* 噪点纹理背景 */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            border-collapse: collapse;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3排过滤%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.04;
+            pointer-events: none;
+            z-index: 100;
         }
-        th, td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: left;
+
+        /* 背景渐变光晕 */
+        .glow-overlay {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at center, var(--accent-glow) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.5;
         }
-        th {
-            background-color: #f2f2f2;
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            padding: 80px 24px;
+            z-index: 10;
         }
-        .loading {
-            color: #888;
+
+        header {
+            margin-bottom: 80px;
+            opacity: 0;
+            animation: fadeInDown 1s var(--ease) forwards;
         }
-        #refresh-btn {
+
+        .kicker {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 8px;
             display: block;
-            margin: 20px auto;
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
         }
+
+        h1 {
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            line-height: 1;
+        }
+
+        /* 主IP展示区 */
+        .hero-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            padding: 60px;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            animation: fadeInUp 1s var(--ease) 0.2s forwards;
+            transition: border-color 0.4s var(--ease);
+        }
+
+        .hero-section:hover {
+            border-color: rgba(0, 240, 255, 0.4);
+        }
+
+        .hero-label {
+            font-size: 14px;
+            color: var(--text-dim);
+            margin-bottom: 24px;
+        }
+
+        .ip-display-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        #main-ip {
+            font-family: var(--font-mono);
+            font-size: clamp(2rem, 10vw, 5rem);
+            font-weight: 300;
+            word-break: break-all;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        #main-ip:hover {
+            color: var(--accent);
+        }
+
+        .copy-hint {
+            font-size: 12px;
+            padding: 6px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 99px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-dim);
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.3s var(--ease);
+        }
+
+        .hero-section:hover .copy-hint {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* 数据网格 */
+        .grid-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            opacity: 0;
+            animation: fadeInUp 1s var(--ease) 0.4s forwards;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 32px;
+            transition: all 0.4s var(--ease);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .source-tag {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 4px 10px;
+            border-radius: 4px;
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--accent);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #444;
+        }
+
+        .status-dot.active {
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        .card-content {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .data-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .data-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-dim);
+        }
+
+        .data-value {
+            font-family: var(--font-mono);
+            font-size: 15px;
+            color: var(--text-main);
+        }
+
+        /* 刷新按钮 */
+        .controls {
+            margin-top: 60px;
+            display: flex;
+            justify-content: center;
+            opacity: 0;
+            animation: fadeInUp 1s var(--ease) 0.6s forwards;
+        }
+
+        #refresh-btn {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 16px 40px;
+            border-radius: 99px;
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.3s var(--ease);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
         #refresh-btn:hover {
-            background-color: #45a049;
+            border-color: var(--accent);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
+            padding: 16px 48px;
+        }
+
+        #refresh-btn:active {
+            transform: scale(0.98);
+        }
+
+        #refresh-btn svg {
+            transition: transform 0.6s var(--ease);
+        }
+
+        #refresh-btn.loading svg {
+            animation: rotate 1s linear infinite;
+        }
+
+        /* 骨架屏效果 */
+        .skeleton {
+            height: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skeleton::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            animation: shimmer 1.5s infinite;
+        }
+
+        /* 动画定义 */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        /* 提示框 */
+        .toast {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--accent);
+            color: #000;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            transition: transform 0.6s var(--ease);
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 20px;
+            }
+
+            .hero-section {
+                padding: 32px;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
         }
     </style>
 </head>
+
 <body>
+    <div class="glow-overlay"></div>
+    <div id="toast" class="toast">COPIED TO CLIPBOARD</div>
+
     <div class="container">
-        <h1>IP 查询</h1>
-        <div id="main-ip">正在获取IP...</div>
-        <table id="ip-table">
-            <tr>
-                <th>IP</th>
-                <th>运营商</th>
-                <th>地址</th>
-            </tr>
-        </table>
-        <button id="refresh-btn">刷新数据</button>
+        <header>
+            <span class="kicker">Connection Baseline</span>
+            <h1>Network Profile.</h1>
+        </header>
+
+        <section class="hero-section" id="hero">
+            <div class="hero-label">CURRENT PUBLIC IP ADDRESS</div>
+            <div class="ip-display-wrapper">
+                <div id="main-ip" onclick="copyIP()">...</div>
+                <span class="copy-hint" id="copy-hint">CLICK TO COPY</span>
+            </div>
+        </section>
+
+        <section class="grid-section" id="ip-grid">
+            <!-- 卡片由JS生成 -->
+        </section>
+
+        <div class="controls">
+            <button id="refresh-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M23 4v6h-6m-14 10v-6h6m7-10a9 9 0 1 1-6.7 3"></path>
+                </svg>
+                REFRESH ANALYTICS
+            </button>
+        </div>
     </div>
 
     <script>
         const API_ENDPOINTS = [
-            'https://api.ipify.org?format=json',
-            'https://ipapi.co/json/',
-            'https://ipinfo.io/json'
+            { name: 'IPIFY', url: 'https://api.ipify.org?format=json', id: 'ipify' },
+            { name: 'IPAPI', url: 'https://ipapi.co/json/', id: 'ipapi' },
+            { name: 'IPINFO', url: 'https://ipinfo.io/json', id: 'ipinfo' }
         ];
 
-        async function fetchWithTimeout(url, timeout = 5000) {
+        const mainIPDisplay = document.getElementById('main-ip');
+        const gridContainer = document.getElementById('ip-grid');
+        const refreshBtn = document.getElementById('refresh-btn');
+        const toast = document.getElementById('toast');
+
+        function createSkeletonCards() {
+            gridContainer.innerHTML = API_ENDPOINTS.map(api => `
+                <div class="card" id="card-${api.id}">
+                    <div class="card-header">
+                        <span class="source-tag">${api.name}</span>
+                        <div class="status-dot"></div>
+                    </div>
+                    <div class="card-content">
+                        <div class="data-item"><div class="data-label">Address</div><div class="skeleton"></div></div>
+                        <div class="data-item"><div class="data-label">Provider</div><div class="skeleton"></div></div>
+                        <div class="data-item"><div class="data-label">Location</div><div class="skeleton"></div></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function fetchWithTimeout(url, timeout = 8000) {
             const controller = new AbortController();
             const id = setTimeout(() => controller.abort(), timeout);
-            try {
-                const response = await fetch(url, { signal: controller.signal });
-                clearTimeout(id);
-                return response;
-            } catch (error) {
-                clearTimeout(id);
-                throw error;
+            const response = await fetch(url, { signal: controller.signal });
+            clearTimeout(id);
+            return response;
+        }
+
+        async function updateCard(api, data, error = false) {
+            const card = document.getElementById(`card-${api.id}`);
+            if (!card) return;
+
+            const dot = card.querySelector('.status-dot');
+            const content = card.querySelector('.card-content');
+
+            if (error) {
+                dot.style.background = '#ff0055';
+                dot.classList.remove('active');
+                content.innerHTML = `<div class="data-item" style="color:#ff0055">CONNECTION FAILED</div>`;
+                return;
+            }
+
+            dot.classList.add('active');
+
+            const city = data.city || '';
+            const region = data.region || '';
+            const country = data.country_name || data.country || '';
+            const location = [city, region, country].filter(Boolean).join(', ') || 'Global';
+
+            content.innerHTML = `
+                <div class="data-item">
+                    <div class="data-label">Address</div>
+                    <div class="data-value">${data.ip || 'Unknown'}</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-label">Provider</div>
+                    <div class="data-value">${data.org || data.as || 'Unknown'}</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-label">Location</div>
+                    <div class="data-value">${location}</div>
+                </div>
+            `;
+
+            if (mainIPDisplay.textContent === '...' || mainIPDisplay.textContent === 'UPDATING...') {
+                mainIPDisplay.textContent = data.ip;
+                document.getElementById('copy-hint').textContent = 'CLICK TO COPY';
             }
         }
 
-        async function getIPInfo() {
-            const table = document.getElementById('ip-table');
-            const mainIP = document.getElementById('main-ip');
-            
-            mainIP.textContent = '正在获取IP...';
-            table.innerHTML = '<tr><th>IP</th><th>运营商</th><th>地址</th></tr>';
+        async function fetchAll() {
+            refreshBtn.classList.add('loading');
+            mainIPDisplay.textContent = 'UPDATING...';
+            createSkeletonCards();
 
-            for (let endpoint of API_ENDPOINTS) {
+            const fetchPromises = API_ENDPOINTS.map(async (api) => {
                 try {
-                    const response = await fetchWithTimeout(endpoint);
+                    const response = await fetchWithTimeout(api.url);
                     const data = await response.json();
-
-                    const row = table.insertRow(-1);
-                    row.insertCell(0).textContent = data.ip;
-                    row.insertCell(1).textContent = data.org || data.as || '未知';
-                    row.insertCell(2).textContent = `${data.city || ''}, ${data.region || ''}, ${data.country || ''}`;
-
-                    if (!mainIP.textContent || mainIP.textContent === '正在获取IP...') {
-                        mainIP.textContent = data.ip;
-                    }
-
-                    // 保存到localStorage
-                    localStorage.setItem('ipInfo', JSON.stringify(data));
-                } catch (error) {
-                    console.error('Error fetching from', endpoint, ':', error);
-                    const row = table.insertRow(-1);
-                    row.insertCell(0).textContent = '获取失败';
-                    row.insertCell(1).textContent = '获取失败';
-                    row.insertCell(2).textContent = '获取失败';
+                    updateCard(api, data);
+                    return data;
+                } catch (e) {
+                    console.error(`Failed ${api.name}:`, e);
+                    updateCard(api, null, true);
+                    return null;
                 }
-            }
+            });
+
+            const results = await Promise.all(fetchPromises);
+            const firstValid = results.find(r => r && r.ip);
+            if (!firstValid) mainIPDisplay.textContent = 'OFFLINE';
+
+            refreshBtn.classList.remove('loading');
         }
 
-        function loadCachedData() {
-            const cachedData = localStorage.getItem('ipInfo');
-            if (cachedData) {
-                const data = JSON.parse(cachedData);
-                document.getElementById('main-ip').textContent = data.ip;
-                const table = document.getElementById('ip-table');
-                const row = table.insertRow(-1);
-                row.insertCell(0).textContent = data.ip;
-                row.insertCell(1).textContent = data.org || data.as || '未知';
-                row.insertCell(2).textContent = `${data.city || ''}, ${data.region || ''}, ${data.country || ''}`;
-            }
+        function copyIP() {
+            const ip = mainIPDisplay.textContent;
+            if (ip === '...' || ip === 'UPDATING...') return;
+
+            navigator.clipboard.writeText(ip).then(() => {
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2000);
+            });
         }
 
-        document.getElementById('refresh-btn').addEventListener('click', getIPInfo);
+        refreshBtn.addEventListener('click', fetchAll);
 
-        // 首先加载缓存数据，然后获取新数据
-        loadCachedData();
-        getIPInfo();
+        // Initial Load
+        fetchAll();
     </script>
 </body>
+
 </html>
