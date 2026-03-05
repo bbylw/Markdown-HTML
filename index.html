@@ -614,7 +614,12 @@
 
     function isHTML(str) {
       const trimmed = str.trim();
-      return (trimmed.startsWith('<') && trimmed.endsWith('>')) || (trimmed.includes('</') && trimmed.includes('>'));
+      if (!trimmed) return false;
+
+      // 仅当内容中存在真实 HTML 元素节点时才判定为 HTML，
+      // 避免将 Markdown 的尖括号语法（如 <https://example.com>）误判为 HTML。
+      const doc = new DOMParser().parseFromString(trimmed, 'text/html');
+      return Array.from(doc.body.childNodes).some(node => node.nodeType === Node.ELEMENT_NODE);
     }
 
     function updateFromQuill() {
